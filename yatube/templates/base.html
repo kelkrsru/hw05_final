@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="ru">
+  <head>
+    {% load static %}
+    <!-- Загружаем общие мета-теги -->
+    {% include 'includes/meta_tags.html' %}
+    <!-- Загружаем фав-иконки -->
+    {% include 'includes/icons.html' %}
+    <!-- Подключен файл со стандартными стилями бутстрап -->
+    <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
+    <!-- Подключен файл со стандартными стилями бутстрап -->
+    <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
+    <title>{% block title %}Последние обновления на сайте{% endblock %}</title>
+  </head>
+  <body>
+    <header>
+      {% include 'includes/header.html' %}
+    </header>
+    <main>
+      {% block content %}
+
+      {% endblock %}
+    </main>
+    <footer class="border-top text-center py-3">
+      {% include 'includes/footer.html' %}
+    </footer>
+  </body>
+</html>
