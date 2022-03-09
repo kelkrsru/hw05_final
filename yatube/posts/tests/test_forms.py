@@ -4,7 +4,7 @@ import tempfile
 
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.conf import settings
-from django.test import Client, TestCase
+from django.test import Client, TestCase, override_settings
 from django.contrib.auth import get_user_model
 from django.urls import reverse_lazy
 
@@ -16,6 +16,7 @@ User = get_user_model()
 TEMP_MEDIA_ROOT = tempfile.mkdtemp(dir=settings.BASE_DIR)
 
 
+@override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
 class PostFormTests(TestCase):
     @classmethod
     def setUpClass(cls):
@@ -76,6 +77,7 @@ class PostFormTests(TestCase):
 
     def test_create_post(self):
         another_group = PostFormTests.another_group
+        user = PostFormTests.user
         image = PostFormTests.uploaded
         posts_count = Post.objects.count()
         form_data = {
@@ -92,8 +94,10 @@ class PostFormTests(TestCase):
         self.assertEqual(Post.objects.count(), posts_count + 1)
         self.assertTrue(
             Post.objects.filter(
-                text='Второй тестовый пост',
-                group=another_group
+                text=form_data['text'],
+                group=another_group,
+                author=user,
+                image='posts/small.gif',
             ).exists()
         )
 
@@ -111,7 +115,7 @@ class PostFormTests(TestCase):
         )
         self.assertRedirects(response, PostFormTests.url_edit_redirect)
         post = Post.objects.get(pk=post.pk)
-        self.assertEqual(post.text, 'Измененный текст')
+        self.assertEqual(post.text, form_data['text'])
         self.assertEqual(post.group, another_group)
 
     def test_create_post_guest_access(self):
@@ -126,9 +130,6 @@ class PostFormTests(TestCase):
         )
         self.assertRedirects(response, '/auth/login/?next=/create/')
         self.assertEqual(Post.objects.count(), posts_count)
-        self.assertFalse(
-            Post.objects.filter(text='Неавторизованный клиент').exists()
-        )
 
     def test_edit_post_guest_access(self):
         post = PostFormTests.post
@@ -143,7 +144,7 @@ class PostFormTests(TestCase):
         self.assertRedirects(response,
                              f'/auth/login/?next=/posts/{post.pk}/edit/')
         post = Post.objects.get(pk=post.pk)
-        self.assertNotEqual(post.text, 'Неавторизованный клиент')
+        self.assertNotEqual(post.text, form_data['text'])
 
 
 class CommentFormTests(TestCase):
@@ -189,7 +190,7 @@ class CommentFormTests(TestCase):
         self.assertEqual(Comment.objects.count(), comments_count + 1)
         self.assertTrue(
             Comment.objects.filter(
-                text='Второй тестовый комментарий',
+                text=form_data['text'],
             ).exists()
         )
 
@@ -208,5 +209,5 @@ class CommentFormTests(TestCase):
                              f'/auth/login/?next=/posts/{post.pk}/comment/')
         self.assertEqual(Comment.objects.count(), comments_count)
         self.assertFalse(
-            Post.objects.filter(text='Неавторизованный клиент').exists()
+            Post.objects.filter(text=form_data['text']).exists()
         )

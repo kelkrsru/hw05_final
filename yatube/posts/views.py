@@ -22,6 +22,7 @@ def index(request):
 
     context: Dict[str, Any] = {
         'page_obj': page_obj,
+        'index': True,
     }
     return render(request, template, context)
 
@@ -151,10 +152,10 @@ def follow_index(request):
     """View-функция для страницы Подписок"""
 
     template: str = 'posts/follow.html'
-    user: User = request.user
-    authors_ids = Follow.objects.filter(user=user).values_list('author_id',
-                                                               flat=True)
 
+    authors_ids = Follow.objects.filter(user=request.user).values_list(
+        'author_id',
+        flat=True)
     posts: Paginator = Paginator(Post.objects.select_related('author', 'group')
                                  .filter(author_id__in=authors_ids),
                                  POSTS_PER_PAGE)
@@ -163,6 +164,7 @@ def follow_index(request):
 
     context: Dict[str, Any] = {
         'page_obj': page_obj,
+        'follow': True,
     }
     return render(request, template, context)
 
@@ -171,11 +173,11 @@ def follow_index(request):
 def profile_follow(request, username):
     """View-функция Подписаться на автора"""
 
-    user: User = request.user
     author: User = get_object_or_404(User, username=username)
-    if user == author or Follow.objects.filter(user=user, author=author):
+    if request.user == author or Follow.objects.filter(
+            user=request.user, author=author):
         return redirect('posts:profile', username=username)
-    Follow.objects.create(user=user, author=author)
+    Follow.objects.create(user=request.user, author=author)
 
     return redirect('posts:profile', username=username)
 
@@ -184,9 +186,9 @@ def profile_follow(request, username):
 def profile_unfollow(request, username):
     """View-функция Отписаться от автора"""
 
-    user: User = request.user
     author: User = get_object_or_404(User, username=username)
-    follow: Follow = get_object_or_404(Follow, user=user, author=author)
+    follow: Follow = get_object_or_404(Follow, user=request.user,
+                                       author=author)
     follow.delete()
 
     return redirect('posts:profile', username=username)

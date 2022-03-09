@@ -1,9 +1,20 @@
 from django.db import models
 from django.contrib.auth import get_user_model
 
-from core.models import CreatedModel
-
 User = get_user_model()
+
+
+class CreatedModel(models.Model):
+    """Абстрактная модель. Добавляет дату создания."""
+
+    created = models.DateTimeField(
+        auto_now_add=True,
+        verbose_name='Дата и время публикации',
+        help_text='Автоматически задается при публикации',
+    )
+
+    class Meta:
+        abstract = True
 
 
 class Post(CreatedModel):
