@@ -1,3 +1,61 @@
-# hw05_final
+## Проект Cоциальная сеть для публикации постов авторов
 
-[![CI](https://github.com/yandex-praktikum/hw05_final/actions/workflows/python-app.yml/badge.svg?branch=master)](https://github.com/yandex-praktikum/hw05_final/actions/workflows/python-app.yml)
+### Сведения о проекте:
+
+Проект **Yatube** предназначен для публикации постов авторов. 
+
+### Возможности проекта:
+1. Регистрация и аутентификация пользователей
+2. Публикация и просмотр постов авторов
+3. Подписка на избранных авторов
+
+### Стек технологии 
+- Python 3.9 
+- Django 2.2.19
+
+### Как запустить проект:
+
+Клонировать репозиторий и перейти в него в командной строке:
+
+```
+git clone git@github.com:kelkrsru/hw05_final.git
+```
+
+```
+cd hw05_final
+```
+
+Cоздать и активировать виртуальное окружение:
+
+```
+python3 -m venv venv
+```
+
+```
+source venv/bin/activate
+```
+
+```
+python3 -m pip install --upgrade pip
+```
+
+Установить зависимости из файла requirements.txt:
+
+```
+pip install -r requirements.txt
+```
+
+Выполнить миграции:
+
+```
+python3 manage.py migrate
+```
+
+Запустить проект:
+
+```
+python3 manage.py runserver
+```
+
+### Автор:
+Кириллов Евгений
